@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>版本活动时间规划生成器</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="app-header">
+  <h1>🎮 版本活动时间规划生成器</h1>
+  <p class="subtitle">输入版本周期与活动配置 → 一键自动排期 → 查看密度提示 → 拖拽微调 → 导出 Timer 表（Excel）</p>
+</header>
+
+<main>
+  <!-- ① 输入区 -->
+  <section class="panel">
+    <h2>① 版本与排期规则</h2>
+    <div class="form-row">
+      <label>版本开始日期 <input type="date" id="input-start-date"></label>
+      <label>持续天数 <input type="number" id="input-total-days" min="1" max="90"> 天</label>
+      <span id="version-summary" class="version-summary"></span>
+    </div>
+    <div class="form-row">
+      <label><input type="checkbox" id="input-allow-overlap" checked> 允许活动重叠</label>
+      <label>每日活动上限 <input type="number" id="input-daily-cap" min="1" max="10"> 个</label>
+    </div>
+
+    <h2>② 活动列表（可增删改）</h2>
+    <div id="activity-list"></div>
+    <button id="btn-add-activity">＋ 添加活动</button>
+  </section>
+
+  <!-- 工具栏 -->
+  <section class="toolbar">
+    <button id="btn-generate" class="btn-primary" title="清空现有排期并全部重新生成（手动调整会被覆盖）">⚙ 自动生成排期</button>
+    <button id="btn-incremental" title="保留现有排期与手动调整，仅补排新增活动或增加的期数">＋ 补排新活动</button>
+    <button id="btn-undo" title="撤销上一步（Ctrl+Z）">↶ 撤销</button>
+    <button id="btn-export" title="导出 Excel Timer 表">⬇ 导出 Timer 表</button>
+  </section>
+
+  <!-- 警告横幅 -->
+  <div id="warning-banner" class="warning-banner hidden"></div>
+
+  <!-- 统计摘要 -->
+  <section id="stats-bar" class="stats-bar"></section>
+
+  <!-- ③ 甘特图 -->
+  <section class="panel">
+    <div class="panel-head">
+      <h2>③ 活动分布图（拖拽可微调，点击可编辑）</h2>
+      <div id="gantt-legend" class="legend"></div>
+    </div>
+    <div id="gantt-scroll" class="gantt-scroll">
+      <div id="gantt-inner" class="gantt-inner"></div>
+    </div>
+  </section>
+
+  <!-- ④ 冲突 -->
+  <section class="panel hidden" id="panel-conflicts">
+    <h2>④ 排期冲突</h2>
+    <div id="conflict-list"></div>
+  </section>
+
+  <!-- ⑤ 建议 -->
+  <section class="panel">
+    <h2>⑤ 密度提示与优化建议</h2>
+    <div id="suggestion-list"></div>
+  </section>
+</main>
+
+<!-- 编辑弹窗 -->
+<div id="edit-modal" class="modal-mask hidden">
+  <div class="modal">
+    <h3>编辑活动实例</h3>
+    <p id="edit-info" class="edit-info"></p>
+    <label>开始天数（第几天开始）<input type="number" id="edit-start" min="1"></label>
+    <label>持续天数 <input type="number" id="edit-duration" min="1" max="90"></label>
+    <div class="modal-actions">
+      <button id="edit-delete" class="btn-danger">删除此实例</button>
+      <span class="modal-spacer"></span>
+      <button id="edit-cancel">取消</button>
+      <button id="edit-ok" class="btn-primary">确定</button>
+    </div>
+  </div>
+</div>
+
+<script src="libs/xlsx.full.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
